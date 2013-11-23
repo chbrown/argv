@@ -30,6 +30,7 @@ Configuration:
     parser.parse(['exec', 'prog.py', '--debug'])
     >>> {'action': 'exec', 'd': True, 'debug': True, 'target': 'prog.py'}
 
+
 ## Testing
 
 Continuous integration:
@@ -39,6 +40,16 @@ Continuous integration:
 Or run tests locally:
 
     python setup.py test
+
+
+## Related libraries
+
+* https://github.com/docopt/docopt
+* http://docs.python.org/2/library/argparse.html
+* http://docs.python.org/2/library/optparse.html (Deprecated)
+
+TODO: write about differences between this library (`argv`) and these libraries,
+  relative merits of each, opposing philosophies, etc.
 
 
 ## License
