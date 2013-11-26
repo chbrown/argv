@@ -42,6 +42,17 @@ Or run tests locally:
     python setup.py test
 
 
+## Development
+
+### Terminology:
+
+- **flag**: a command line argument marked with a double dash or each component of a group denoted by a single dash. E.g.,
+    * `--verbose --logfile logs/app.txt` has two flags: `verbose` and `logfile`.
+    * `-czf archive.tgz app/` has three flags: `c`, `z`, and `f`.
+- **token**: a white-space separated command line item. E.g.,
+    * `--input= --logfile logs/app.txt
+
+
 ## Related libraries
 
 * https://github.com/docopt/docopt

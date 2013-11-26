@@ -1,78 +1,6 @@
 from argv.iterables import peekable
-
-
-def flatten_flags(flags):
-    '''Turn argv-type flags strings into names of arguments.
-
-    Guarantees:
-
-    * flags will not contain an '='
-    * flags will not be '--'
-
-    Since all output will be single flags, we yield strings, rather than tuples.
-
-    | call | output |
-    |:-----|:-------|
-    | `flatten_flags('-m')` | `['m']` |
-    | `flatten_flags('-czf')` | `['c', 'z', 'f']` |
-    | `flatten_flags('--last')` | `['last']` |
-
-    N.b., those lists are actually iterables.
-    '''
-    if flags.startswith('--'):
-        # easy, just remove the '--'
-        yield flags[2:]
-    else:
-        # short flags: yield each thing after the first '-' (handles multiple)
-        for letter in flags[1:]:
-            yield letter
-
-
-def flatten_argv(argv):
-    '''Turn strings into (is_flag, value) tuples:
-
-    For an argv like this:
-
-        ['-f', 'pets.txt', '-v', 'cut', '-cz', '--lost', '--delete=sam', '--', 'lester', 'jack']
-
-    `flatten_argv` produces a list like:
-
-        [
-            (True,  'f'),
-            (False, 'pets.txt'),
-            (True,  'v'),
-            (False, 'cut'),
-            (True,  'c'),
-            (True,  'z'),
-            (True,  'lost'),
-            (True,  'delete'),
-            (False, 'sam'),
-            (False, 'lester'),
-            (False, 'jack'),
-        ]
-
-    Todo:
-
-        ensure that 'verbose' in '--verbose -- a b c' is treated as a boolean even if not marked as one.
-    '''
-    # one pass max
-    argv = iter(argv)
-    for arg in argv:
-        if arg == '--':
-            # bleed out argv without breaking, since argv is an iterator
-            for arg in argv:
-                yield False, arg
-        elif arg.startswith('-'):
-            # this handles both --last=man.txt and -czf=file.tgz
-            # str.partition produces a 3-tuple whether or now the separator is found
-            arg, sep, value = arg.partition('=')
-            for arg in flatten_flags(arg):
-                yield True, arg
-            if sep:
-                # we don't re-flatten the 'value' from '--arg=value'
-                yield False, value
-        else:
-            yield False, arg
+from argv.flags import parse_tokens
+from argv.parsers.inferential import InferentialParser
 
 
 class Argument(object):
@@ -91,12 +19,13 @@ class Argument(object):
         return 'Argument(%(names)r, default=%(default)r, boolean=%(boolean)r, positional=%(positional)r)' % self.__dict__
 
 
-class Parser(object):
+class BooleanParser(InferentialParser):
     def __init__(self, arguments=None):
         self.arguments = arguments or []
 
     def __repr__(self):
-        return 'Parser(\n  %s)' % ',\n  '.join(repr(argument) for argument in self.arguments)
+        argument_reprs = map(repr, self.arguments)
+        return '%s(\n  %s)' % (self.__class__.__name__, ',\n  '.join(argument_reprs))
 
     def add(self, *matches, **kw):  # kw=default=None, boolean=False
         '''Add an argument; this is optional, and mostly useful for setting up aliases or setting boolean=True
@@ -193,18 +122,18 @@ class Parser(object):
             # skip over the program name with the [1:] slice
             args = sys.argv[1:]
 
-        # arglist is a tuple of (flag?, name) pairs
-        arglist = peekable(flatten_argv(args))
-        for flag, name in arglist:
-            if flag is True:
+        # arglist is a tuple of (is_flag, name) pairs
+        arglist = peekable(parse_tokens(args))
+        for is_flag, name in arglist:
+            if is_flag is True:
                 argument = self.find_argument(name)
 
                 # .peek will return the default argument iff there are no more entries
-                next_flag, next_name = arglist.peek(default=(None, None))
-                # next_flag will be None if there are no more items, but True/False if there is a next item
+                next_is_flag, next_name = arglist.peek(default=(None, None))
+                # next_is_flag will be None if there are no more items, but True/False if there is a next item
 
                 # if this argument looks for a subsequent (is set as boolean), and the subsequent is not a flag, consume it
-                if argument.boolean is False and next_flag is False:
+                if argument.boolean is False and next_is_flag is False:
                     opts[name] = next_name
                     # finally, advance our iterator, but since we already have the next values, just discard it
                     arglist.next()

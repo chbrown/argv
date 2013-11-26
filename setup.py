@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='argv',
-    version='0.0.2',
-    description='Simpler command line argument parsing',
+    version='0.0.3',
     url='https://github.com/chbrown/argv',
     author='Christopher Brown',
     author_email='io@henrian.com',
+    description='Simpler command line argument parsing',
     long_description=open('README.rst').read(),
     license=open('LICENSE').read(),
     packages=find_packages(),
