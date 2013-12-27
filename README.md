@@ -1,6 +1,6 @@
 ## Simpler command line argument parsing
 
-In the spirit of [`optimist`](https://github.com/substack/node-optimist): less magic, more flexibility.
+In the spirit of [optimist](https://github.com/substack/node-optimist): less magic, more flexibility.
 
     pi install argv
 
@@ -49,8 +49,8 @@ Or run tests locally:
 - **flag**: a command line argument marked with a double dash or each component of a group denoted by a single dash. E.g.,
     * `--verbose --logfile logs/app.txt` has two flags: `verbose` and `logfile`.
     * `-czf archive.tgz app/` has three flags: `c`, `z`, and `f`.
-- **token**: a white-space separated command line item. E.g.,
-    * `--input= --logfile logs/app.txt
+- **token**: a white-space (or `=`) separated command line item. E.g.,
+    * `--input=prog.py --logfile logs/app.txt` has four tokens: `--input`, `prog.py`, `--logfile`, and `logs/app.txt`
 
 
 ## Related libraries

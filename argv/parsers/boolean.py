@@ -3,7 +3,7 @@ from argv.flags import parse_tokens
 from argv.parsers.inferential import InferentialParser
 
 
-class Argument(object):
+class BooleanArgument(object):
     # not much more than a named tuple
     def __init__(self, names, default, boolean, positional):
         # names is a list of strings, which can be anything that doesn't start with a '-'
@@ -16,7 +16,9 @@ class Argument(object):
         self.positional = positional
 
     def __repr__(self):
-        return 'Argument(%(names)r, default=%(default)r, boolean=%(boolean)r, positional=%(positional)r)' % self.__dict__
+        named_attrs = ['default', 'boolean', 'positional']
+        return '%s(%r, %s)' % (self.__class__.__name__, self.names,
+            ', '.join(key + '=' + repr(getattr(self, key)) for key in named_attrs))
 
 
 class BooleanParser(InferentialParser):
@@ -56,7 +58,7 @@ class BooleanParser(InferentialParser):
                 positional = match
                 names.append(match)
 
-        argument = Argument(names, default, boolean, positional)
+        argument = BooleanArgument(names, default, boolean, positional)
         self.arguments.append(argument)
 
         # chainable
@@ -66,8 +68,8 @@ class BooleanParser(InferentialParser):
         for argument in self.arguments:
             if name in argument.names:
                 return argument
-        # default argument:
-        return Argument([], None, False, False)
+        # default argument -- maybe this should be preset and used as self.DefaultArgument or something
+        return BooleanArgument([], None, False, False)
 
     def parse(self, args=None):
         '''Parse a list of arguments, returning a dict
