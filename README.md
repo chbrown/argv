@@ -58,6 +58,7 @@ Or run tests locally:
 * https://github.com/docopt/docopt
 * http://docs.python.org/2/library/argparse.html
 * http://docs.python.org/2/library/optparse.html (Deprecated)
+* http://tclap.sourceforge.net/manual.html
 
 TODO: write about differences between this library (`argv`) and these libraries,
   relative merits of each, opposing philosophies, etc.
