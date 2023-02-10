@@ -2,7 +2,7 @@
 
 In the spirit of [optimist](https://github.com/substack/node-optimist): less magic, more flexibility.
 
-    pi install argv
+    pip install argv
 
 
 ### Quickstart
